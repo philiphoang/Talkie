@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
 
@@ -29,6 +30,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton sendBtn;
     private ImageView mVoiceBtn;
 
-    private String ip;
+    private String ip = "10.0.0.227";
     private InetAddress endPoint;
 
     private Thread worker;
@@ -55,17 +57,17 @@ public class MainActivity extends AppCompatActivity {
     private final int USER = 0;
     private final int BOT = 1;
 
+    private String[] MOOD_HAPPY = {"good", "great", "wonderful", "amazing", "happy", "excited", "glad"};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
 
-        NestedScrollView chatScrollView = findViewById(R.id.chatScrollView);
-
         editText = findViewById(R.id.edittext_chatbox);
         sendBtn = findViewById(R.id.send_button);
-        mVoiceBtn = findViewById(R.id.voiceBtn);
+        mVoiceBtn = findViewById(R.id.talkie_neutral);
 
         //Initialize Text to speech
         tts = new TextToSpeech(getApplication(), new TextToSpeech.OnInitListener() {
@@ -165,12 +167,28 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     BotResponse botResponse = response.body().get(0);
                     showTextView(botResponse.getText(), BOT);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        tts.speak(botResponse.getText(), TextToSpeech.QUEUE_FLUSH, null, null);
+
+                    try {
+                        Thread.sleep(1200);
+
+                        //DOES NOT WORK
+                        if (stringContainsStringFromList(botResponse.getText(), MOOD_HAPPY)) {
+                            findViewById(R.id.talkie_neutral).setVisibility(View.GONE);
+                            findViewById(R.id.talkie_smile).setVisibility(View.VISIBLE);
+                            Log.d("IMAGE", "CHAGNED IMAGE");
+                        }
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            tts.speak(botResponse.getText(), TextToSpeech.QUEUE_FLUSH, null, null);
+                        }
+                        else {
+                            tts.speak(botResponse.getText(), TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    else {
-                        tts.speak(botResponse.getText(), TextToSpeech.QUEUE_FLUSH, null);
-                    }
+
+
                 }
             }
 
@@ -183,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showTextView(String message, int type) {
-        LinearLayout chatLayout = findViewById(R.id.chat_layout);
         FrameLayout frameLayout;
 
         LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
@@ -201,7 +218,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         frameLayout.setFocusableInTouchMode(true);
-        chatLayout.addView(frameLayout);
         TextView tv = frameLayout.findViewById(R.id.chat_msg);
         tv.setText(message);
         frameLayout.requestFocus();
@@ -221,5 +237,9 @@ public class MainActivity extends AppCompatActivity {
     FrameLayout getBotLayout() {
         LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
         return (FrameLayout) inflater.inflate(R.layout.bot_message_box, null);
+    }
+
+    public static boolean stringContainsStringFromList(String str, String[] list) {
+        return (Arrays.asList(list).contains(str.toLowerCase()));
     }
 }
