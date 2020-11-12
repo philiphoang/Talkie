@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private TextToSpeech tts;
     private EditText editText;
     private FloatingActionButton sendBtn;
-    private ImageView mVoiceBtn;
+    private ImageButton voiceBtn;
 
     private String ip = "10.0.0.227";
     private InetAddress endPoint;
@@ -58,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
     private final int BOT = 1;
 
     private String[] MOOD_HAPPY = {"good", "great", "wonderful", "amazing", "happy", "excited", "glad"};
+    private String[] MOOD_SAD = {"sad", "unhappy", "bad", "awful", "terrible", "not good", "not so good", "depressed"};
+
+    UserMessage userMessage = null;
+    String msg = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,14 +71,16 @@ public class MainActivity extends AppCompatActivity {
 
         editText = findViewById(R.id.edittext_chatbox);
         sendBtn = findViewById(R.id.send_button);
-        mVoiceBtn = findViewById(R.id.talkie_neutral);
+        voiceBtn = findViewById(R.id.talkie_neutral);
 
         //Initialize Text to speech
         tts = new TextToSpeech(getApplication(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if (status != TextToSpeech.ERROR)
+                if (status != TextToSpeech.ERROR) {
                     tts.setLanguage(Locale.UK);
+
+                }
             }
         });
 
@@ -84,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mVoiceBtn.setOnClickListener(new View.OnClickListener() {
+        voiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 speak();
@@ -93,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void runThread() {
+    private void findIpThread() {
         worker = new Thread(new Runnable(){
             public void run() {
                 try {
@@ -112,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hi, speak something");
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hi, say something");
 
         try {
             startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT);
@@ -135,8 +141,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendMessage() {
-        String msg = editText.getText().toString();
-        UserMessage userMessage = null;
+        msg = editText.getText().toString();
+        userMessage = null;
 
         OkHttpClient okHttpClient = new OkHttpClient();
         Retrofit retrofit = new Retrofit.Builder()
@@ -171,12 +177,7 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         Thread.sleep(1200);
 
-                        //DOES NOT WORK
-                        if (stringContainsStringFromList(botResponse.getText(), MOOD_HAPPY)) {
-                            findViewById(R.id.talkie_neutral).setVisibility(View.GONE);
-                            findViewById(R.id.talkie_smile).setVisibility(View.VISIBLE);
-                            Log.d("IMAGE", "CHAGNED IMAGE");
-                        }
+                        changeFace(msg);
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             tts.speak(botResponse.getText(), TextToSpeech.QUEUE_FLUSH, null, null);
@@ -187,8 +188,6 @@ public class MainActivity extends AppCompatActivity {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
-
                 }
             }
 
@@ -239,7 +238,48 @@ public class MainActivity extends AppCompatActivity {
         return (FrameLayout) inflater.inflate(R.layout.bot_message_box, null);
     }
 
+    public void changeFace(String message) {
+        ImageButton talkie_neutral = findViewById(R.id.talkie_neutral);
+        ImageButton talkie_happy = findViewById(R.id.talkie_happy);
+        ImageButton talkie_sad = findViewById(R.id.talkie_sad);
+
+        if (stringContainsStringFromList(message, MOOD_HAPPY)) {
+            Log.d("IMAGE", "changeFace: HAPPY");
+            talkie_neutral.setVisibility(View.GONE);
+            talkie_sad.setVisibility(View.GONE);
+            talkie_happy.setVisibility(View.VISIBLE);
+            voiceBtn = talkie_happy;
+        }
+        else if (stringContainsStringFromList(message, MOOD_SAD)) {
+            Log.d("IMAGE", "changeFace: SAD");
+            talkie_neutral.setVisibility(View.GONE);
+            talkie_happy.setVisibility(View.GONE);
+            talkie_sad.setVisibility(View.VISIBLE);
+            voiceBtn = talkie_sad;
+        }
+        else {
+            Log.d("IMAGE", "changeFace: NEUTRAL");
+            talkie_happy.setVisibility(View.GONE);
+            talkie_sad.setVisibility(View.GONE);
+            talkie_neutral.setVisibility(View.VISIBLE);
+            voiceBtn = talkie_neutral;
+        }
+
+        voiceBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speak();
+            }
+        });
+    }
+
     public static boolean stringContainsStringFromList(String str, String[] list) {
-        return (Arrays.asList(list).contains(str.toLowerCase()));
+
+        for (int i = 0; i < list.length; i++) {
+            if (str.toLowerCase().contains(list[i]))
+                return true;
+        }
+
+        return false;
     }
 }

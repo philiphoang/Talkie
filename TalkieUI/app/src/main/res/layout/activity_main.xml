@@ -13,20 +13,20 @@
         tools:ignore="MissingConstraints">
 
         <ImageButton
-            android:id="@+id/talkie_smile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:src="@drawable/talkie_smile"
-            android:visibility="gone"/>
-
-        <ImageButton
             android:id="@+id/talkie_neutral"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
             android:src="@drawable/talkie_neutral"
             android:visibility="visible"/>
+
+        <ImageButton
+            android:id="@+id/talkie_happy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/talkie_happy"
+            android:visibility="gone"/>
 
         <ImageButton
             android:id="@+id/talkie_sad"
