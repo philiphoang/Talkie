@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton sendBtn;
     private ImageButton voiceBtn;
 
-    private String ip = "10.0.0.227";
+    private String ip = "LOCAL IP ADDRESS";
     private InetAddress endPoint;
 
     private Thread worker;
@@ -57,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
     private final int USER = 0;
     private final int BOT = 1;
 
-    private String[] MOOD_HAPPY = {"good", "great", "wonderful", "amazing", "happy", "excited", "glad"};
-    private String[] MOOD_SAD = {"sad", "unhappy", "bad", "awful", "terrible", "not good", "not so good", "depressed"};
+    private String[] MOOD_HAPPY = {"good", "great", "wonderful", "amazing", "happy", "excited", "glad", "bye", "goodbye", "good bye"};
+    private String[] MOOD_SAD = {"sad", "unhappy", "bad", "awful", "terrible", "not good", "not so good", "depressed", "lonely", "alone"};
 
     UserMessage userMessage = null;
     String msg = "";
@@ -94,21 +94,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 speak();
-            }
-        });
-
-    }
-
-    private void findIpThread() {
-        worker = new Thread(new Runnable(){
-            public void run() {
-                try {
-                    endPoint = InetAddress.getLocalHost();
-                    ip = endPoint.getHostAddress();
-                    Log.d("IPADDRESS", ip);
-                } catch(UnknownHostException e) {
-                    e.printStackTrace();
-                }
             }
         });
     }

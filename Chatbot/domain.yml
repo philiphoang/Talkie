@@ -1,32 +1,73 @@
+actions:
+- utter_ask_corona
+- utter_cheer_up
+- utter_corona_friends
+- utter_corona_lonely
+- utter_corona_no
+- utter_corona_sick_no
+- utter_corona_sick_talk
+- utter_corona_stay_safe
+- utter_corona_tell_more
+- utter_corona_yes_correct
+- utter_goodbye
+- utter_greet_ask_name
+- utter_greet_name
+- utter_happy
+entities:
+- first_name
 intents:
-  - greet
-  - goodbye
-  - affirm
-  - deny
-  - mood_great
-  - mood_unhappy
-  - bot_challenge
-
+- corona
+- corona_lonely
+- affirm
+- inform_name
+- mood_unhappy
+- corona_friends
+- greet
+- goodbye
+- deny
+- mood_happy
+- mood_great
+- ask_identity
+- tell_me_a_joke
+- mood_fear
+- mood_anger
 responses:
-  utter_greet:
-  - text: "Hey! How are you?"
-
+  utter_ask_corona:
+  - text: Do you know anything about coronavirus?
   utter_cheer_up:
-  - text: "Here is something to cheer you up:"
-    image: "https://i.imgur.com/nGF1K8f.jpg"
-
-  utter_did_that_help:
-  - text: "Did that help you?"
-
-  utter_happy:
-  - text: "Great, carry on!"
-
+  - text: I'm sorry you have to go through this. Sending a virtual hug. Did that help?
+  utter_corona_friends:
+  - text: I hope you can see them soon. Do you know anyone who is sick?
+  utter_corona_lonely:
+  - text: It is okay to feel lonely. Why does it make you feel lonely?
+  utter_corona_no:
+  - text: Coronavirus makes people sick. That is why we need to wash our hands and
+      stay home alot, so we won't be sick. How does the coronavirus make you feel?
+  utter_corona_sick_no:
+  - text: Are you afraid of getting sick?
+  - text: Are you afraid someone you know will get sick?
+  utter_corona_sick_talk:
+  - text: Have you talked to them since they got sick?
+  utter_corona_stay_safe:
+  - text: I hope you stay safe and healthy, and remember to wash your hands. We will
+      go through this together!
+  utter_corona_tell_more:
+  - text: Tell me what you know!
+  utter_corona_yes_correct:
+  - text: That is correct. You are so smart! How does the coronavirus make you feel?
   utter_goodbye:
-  - text: "Bye"
-
-  utter_iamabot:
-  - text: "I am a bot, powered by Rasa."
-
+  - text: Goodbye
+  utter_greet_ask_name:
+  - text: Hey, my name is Talkie! What is your name?
+  utter_greet_name:
+  - text: Hey there {first_name}! How are you doing?
+  utter_happy:
+  - text: I'm happy that you are happy! Can I ask you about something?
+  utter_sorry:
+  - text: I'm sorry.
 session_config:
-  session_expiration_time: 60
   carry_over_slots_to_new_session: true
+  session_expiration_time: 60
+slots:
+  first_name:
+    type: text
